@@ -1,21 +1,26 @@
 import json
 import random
 import time
+import pandas as pd
+import numpy as np
+
+
+def simulate_crypto_prices(price, mu=0.0005, sigma=0.02):
+
+        epsilon = np.random.normal(0, 1)
+        price *=  np.exp((mu - 0.5 * sigma ** 2) + sigma * epsilon)
+        return price
 while True:
     with open("stocks.json") as f:
         data = json.load(f)
     k = len(data.keys())
-    for x in range(k):
+    for x in range(random.randint(1,k)):
         i = random.randint(0,k-1)
         price = data[list(data.keys())[i]]
-        diff = price/0.98-price
-        #print(f"{list(data.keys())[i]}: {price}")
-        random_chance = random.randint(0,100)
-        if random_chance > 45:
-            data[list(data.keys())[i]] += diff
-        else:
-            data[list(data.keys())[i]] -= diff
+
+        diff = simulate_crypto_prices(price)
+        data[list(data.keys())[i]] = diff
         with open("stocks.json", "w") as f:
             json.dump(data, f)
 
-    time.sleep(2)
+    time.sleep(5)

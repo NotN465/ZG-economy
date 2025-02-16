@@ -5,6 +5,13 @@ from sqlalchemy.orm import relationship
 engine = create_engine('sqlite:///UserInfo.db')
 Base = declarative_base()
 
+class Server(Base):
+    __tablename__ = 'server'
+    id = Column(Integer, primary_key=True)
+    server_id = Column(Integer)
+    stock_market_channel_id = Column(Integer)
+    message_stock_market_id = Column(Integer)
+    stocks = Column(JSON)
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -37,10 +44,6 @@ class Inventory(Base):
 class Stocks(Base):
     __tablename__ = 'stocks'
     id = Column(Integer, primary_key=True)
-    MEME = Column(Float)
-    TROLL = Column(Float)
-    FOMO = Column(Float)
-    YOLO = Column(Float)
-    LOL = Column(Float)
+    stocks = Column(JSON)
     user_id = Column(Integer, ForeignKey('users.id'))
 Base.metadata.create_all(engine)
