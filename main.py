@@ -2,12 +2,13 @@ import random
 import time
 from datetime import datetime,timedelta
 import discord
+from discord.ui import  View,Button
 from discord.ext import commands
 from sqlalchemy import create_engine, Column, Integer, String,func
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from models import User,Bank,Inventory,Stocks,Server
+from models import User,Bank,Inventory,Stocks,Server,CommunityMarket
 import os
 import json
 import asyncio
@@ -15,6 +16,7 @@ import math
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 bot = commands.Bot(command_prefix="!",intents=intents)
 
 engine = create_engine('sqlite:///UserInfo.db')
@@ -1049,6 +1051,125 @@ async def izbrisi_coin(ctx):
                     await ctx.send(f"Uspjesno izbrisan coin {message[1]}!")
             else:
                 await ctx.send("Pogresan format komande! Upisi !izbrisi_coin <ime_coina>")
+bot.command()
+class MarketEmbeds(View):
+    def __init__(self,embeds):
+        super().__init__()
+        self.page = 0
+        self.embeds = embeds
+    @discord.ui.button(label="◀", style=discord.ButtonStyle.gray)
+    async def previous_page(self,interaction:discord.Interaction,button:Button):
+        if self.page > 0:
+            self.page -= 1
+            if self.page == 0:
+                button.disabled = True
+                self.children[1].disabled=False
+            else:
+                button.disabled = False
+                self.children[1].disabled = False
+            await interaction.response.edit_message(embed=self.embeds[self.page], view=self)
+        else:
+            button.disabled = False
+            self.children[1].disabled=False
+            await interaction.response.edit_message(embed=self.embeds[self.page], view=self)
+
+    @discord.ui.button(label="▶", style=discord.ButtonStyle.gray)
+    async def next_page(self,interaction:discord.Interaction,button:Button):
+        print(self.page,len(self.embeds)-1)
+        if self.page < len(self.embeds) - 1:
+            self.page += 1
+            if self.page == len(self.embeds) - 1:
+                button.disabled = True
+                self.children[0].disabled=False
+            else:
+                button.disabled = False
+                self.children[0].disabled = False
+            await interaction.response.edit_message(embed=self.embeds[self.page], view=self)
+
+        else:
+            button.disabled = False
+            self.children[0].disabled=False
+            await interaction.response.edit_message(embed=self.embeds[self.page], view=self)
+
+
+@bot.command()
+async def market(ctx):
+    embeds=[]
+    market_dict = {}
+    market_items = session.query(CommunityMarket).all()
+    guild = bot.get_guild(ctx.guild.id)
+    for user_items in market_items:
+        for item_name,item_value in user_items.items.items():
+            user = guild.get_member(int(user_items.user_id))
+            item_name = item_name + f' : {user.name}'
+            market_dict[item_name] = item_value
+            print(item_name,item_value,user.name)
+    broj_stranica = int(len(market_dict) / 5) + 1
+    market_embed = discord.Embed(title="Market", color=discord.Color.dark_blue())
+    market_embed.set_footer(text=f"Stranica 1/{broj_stranica}")
+    for i in range(len(market_dict)):
+        if i%5==0 and i!=0:
+            embeds.append(market_embed)
+            market_embed = discord.Embed(title="Market",
+                                         color=discord.Color.dark_blue())
+            market_embed.set_footer(text=f"Stranica {int(i/5) + 1}/{broj_stranica}")
+        if (i==len(market_dict)-1 and i%5!=0) or (i==len(market_dict)-1 and len(market_dict)<5):
+            market_embed.add_field(name=list(market_dict.keys())[i], value=f'Kolicina: {list(market_dict.values())[i][1]}\nCijena jednog:{list(market_dict.values())[i][0]}', inline=False)
+            embeds.append(market_embed)
+        else:
+            market_embed.add_field(name=list(market_dict.keys())[i], value=f'Kolicina: {list(market_dict.values())[i][1]}\nCijena jednog: {list(market_dict.values())[i][0]}kn', inline=False)
+    view = MarketEmbeds(embeds)
+    view.children[0].disabled=True
+    if len(embeds)==1:
+        view.children[1].disabled=True
+    await ctx.send(embed=embeds[0], view=view)
+@bot.command()
+async def prodaj(ctx):
+    if str(ctx.author.id) in ids():
+        message = ctx.message.content
+        message = message.split(" ")
+        if len(message) == 4:
+            market = session.query(CommunityMarket).all()
+            market_ids = map(lambda x: int(x.user_id), market)
+            inventory = session.query(Inventory).filter_by(user_id=str(ctx.author.id)).first()
+            if message[1] in inventory.items.keys() and int(message[3]) <= inventory.items[message[1]]:
+                inventory.items[message[1]] -=int(message[3])
+                flag_modified(inventory,"items")
+                session.commit()
+                if int(ctx.author.id) not in list(market_ids):
+                    market = CommunityMarket(user_id=str(ctx.author.id), items={})
+                    session.add(market)
+                    session.commit()
+                user_market = session.query(CommunityMarket).filter_by(user_id=str(ctx.author.id)).first()
+                if message[1] in user_market.items.keys():
+                    user_market.items[message[1]] = [int(message[2]),int(message[3])+user_market.items[message[1]][1]]
+                    flag_modified(user_market, "items")
+                    session.commit()
+                    await ctx.send(f"Cijena {message[1]} je promjenjena na {message[2]}kn za jedan i dodano ih je jos {message[3]} za prodaju")
+                    return
+                cijena = int(message[2])
+                kolicina = int(message[3])
+                user_market.items[str(message[1])] = [cijena, kolicina]
+                flag_modified(user_market, "items")
+                session.commit()
+                await ctx.send(f"Uspjesno ste {message[3]} {message[1]} stavili na prodaju za {message[2]}kn za jedan")
+            else:
+                await ctx.send("Nemate tu kolicinu tog proizvoda.")
+        else:
+            await ctx.send("Pogresan format komande! Upisi !prodaj <ime_proizvoda> <cijena_u_kn> <kolicina>")
+    else:
+        await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+@bot.command()
+async def na_prodaji(ctx):
+    if str(ctx.author.id) in ids():
+        item_embed = discord.Embed(title="Proizvodi", color=discord.Color.dark_blue())
+        item_embed.set_footer(text=f"Proizvodi od {ctx.author.name} koji su na prodaji")
+        user_market_items = session.query(CommunityMarket).filter_by(user_id=int(ctx.author.id)).first()
+        for item_name,item_value in user_market_items.items.items():
+            item_embed.add_field(name=item_name,value=f"Kolcina: {item_value[1]}\nCijena jednog: {item_value[0]}")
+        await ctx.send(embed=item_embed)
+    else:
+        await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
 with open('token.txt', 'r') as f:
     token = f.read()
 bot.run(str(token))

@@ -46,4 +46,9 @@ class Stocks(Base):
     id = Column(Integer, primary_key=True)
     stocks = Column(JSON)
     user_id = Column(Integer, ForeignKey('users.id'))
+class CommunityMarket(Base):
+    __tablename__ = 'community_market'
+    id = Column(Integer, primary_key=True)
+    items = Column(JSON)
+    user_id = Column(Integer, ForeignKey('users.id'))
 Base.metadata.create_all(engine)
