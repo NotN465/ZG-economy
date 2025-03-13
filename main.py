@@ -283,7 +283,11 @@ async def NapraviProfil(ctx):
         await ctx.send("Vec imas racun!")
     else:
         now = (datetime.now() - timedelta(hours=4)).strftime("%M-%H-%d-%m-%Y")
-        user = User(name=str(ctx.author.name), id=str(ctx.author.id),posao="Nema",xp=0,chop_xp=0,mine_xp=0,fishing_xp=0,last_fishing_time=now,last_mine_time=now,last_chop_time=now)
+        user = User(name=str(ctx.author.name), id=str(ctx.author.id),posao="Nema"
+                    ,xp=0,chop_xp=0,mine_xp=0,fishing_xp=0
+                    ,last_fishing_time=now,last_mine_time=now,last_chop_time=now
+                    ,fight_style="Nema",last_fight_style_selection=now,last_fight_time=now)
+
         money = Bank(money=50, savings=0, user_id=str(ctx.author.id), last_work_time=now)
         invetory = Inventory(items={}, user_id=str(ctx.author.id))
         stocks = Stocks(stocks={},user_id=str(ctx.author.id))
@@ -1100,10 +1104,10 @@ async def market(ctx):
     guild = bot.get_guild(ctx.guild.id)
     for user_items in market_items:
         for item_name,item_value in user_items.items.items():
-            user = guild.get_member(int(user_items.user_id))
+            user = await bot.fetch_user(int(user_items.user_id))
             item_name = item_name + f' : {user.name}'
             market_dict[item_name] = item_value
-            print(item_name,item_value,user.name)
+            #print(item_name,item_value,user.name)
     broj_stranica = int(len(market_dict) / 5) + 1
     market_embed = discord.Embed(title="Market", color=discord.Color.dark_blue())
     market_embed.set_footer(text=f"Stranica 1/{broj_stranica}")
@@ -1160,16 +1164,166 @@ async def prodaj(ctx):
     else:
         await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
 @bot.command()
+async def market_kupi(ctx):
+    if str(ctx.author.id) in ids():
+        message = ctx.message.content
+        message = message.split(' ')
+        if len(message) == 3:
+            market_list = []
+            market_items = session.query(CommunityMarket).all()
+            for user_items in market_items:
+                for item_name in user_items.items.keys():
+                    if item_name not in market_list:
+                        market_list.append(str(item_name))
+            smallest_user = 0
+            smallest_price = 0
+            if str(message[1]) in market_list:
+                for user_items in market_items:
+                    for item_name,item_value in user_items.items.items():
+                        if item_value < smallest_price:
+                            smallest_price = int(item_value)
+                            smallest_user = str(user_items.user_id)
+                smallest_user_market = session.query(CommunityMarket).filter_by(user_id=smallest_user).first()
+                smallest_user_market_bank=session.query(Bank).filter_by(user_id=smallest_user).first()
+                user_market = session.query(Inventory).filter_by(user_id=str(ctx.author.id)).first()
+                user_market_bank = session.query(Bank).filter_by(user_id=str(ctx.author.id)).first()
+                if int(message[2])*smallest_price <= user_market.money:
+                    user_market_bank.money -= int(message[2])*smallest_price
+                    user_market.items[str(message[1])] += int(message[2])
+                    flag_modified(user_market, "items")
+                    session.commit()
+                    smallest_user_market_bank.money += int(message[2])*smallest_price
+                    smallest_user_market.items[str(message[1])] -= int(message[2])
+                    flag_modified(smallest_user_market, "items")
+                    session.commit()
+                    await ctx.send(f"Uspjesno ste kupili {message[2]} {message[1]} za {int(message[2])*smallest_price}kn")
+                else:
+                    await ctx.send("Nemate dovoljno novca!")
+                # Provjerio si jel postoji na marketu, sad moras napraviti to da mozes kupiti najjeftiniji proizvod od onih koji trazi
+            else:
+                await ctx.send("Tog proizvoda nema na marketu")
+        else:
+            await ctx.send("Pogresan format komande, tocan format glasi ovako: !market_kupi <proizvod> <kolicina>")
+    else:
+        await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+@bot.command()
 async def na_prodaji(ctx):
     if str(ctx.author.id) in ids():
         item_embed = discord.Embed(title="Proizvodi", color=discord.Color.dark_blue())
         item_embed.set_footer(text=f"Proizvodi od {ctx.author.name} koji su na prodaji")
         user_market_items = session.query(CommunityMarket).filter_by(user_id=int(ctx.author.id)).first()
         for item_name,item_value in user_market_items.items.items():
-            item_embed.add_field(name=item_name,value=f"Kolcina: {item_value[1]}\nCijena jednog: {item_value[0]}")
+            item_embed.add_field(name=item_name,value=f"Kolicina: {item_value[1]}\nCijena jednog: {item_value[0]}")
         await ctx.send(embed=item_embed)
     else:
         await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+@bot.command()
+async def makni_proizvod(ctx):
+    if str(ctx.author.id) in ids():
+        message = ctx.message.content
+        message = message.split(' ')
+        proizvod = str(message[1])
+        kolicina = int(message[2])
+        user_market_inv = session.query(CommunityMarket).filter_by(user_id=str(ctx.author.id)).first()
+        user_inv = session.query(Inventory).filter_by(user_id=str(ctx.author.id)).first()
+        print(user_market_inv.items, user_inv.items,user_market_inv.items[proizvod])
+        if len(message) == 3:
+            if proizvod in user_market_inv.items.keys() and user_market_inv.items[proizvod][1] >= kolicina:
+                if kolicina == user_market_inv.items[proizvod][1]:
+                    user_market_inv.items.pop(proizvod)
+                else:
+                    user_market_inv.items[proizvod][1] -= kolicina
+                flag_modified(user_market_inv, "items")
+                if proizvod in user_inv.items:
+                    user_inv.items[proizvod] += kolicina
+                else:
+                    user_inv.items[proizvod] = kolicina
+                flag_modified(user_inv, "items")
+                session.commit()
+                await ctx.send(f"Uspjesno ste maknuli {kolicina} {proizvod}")
+            else:
+                await ctx.send("Taj proizvod ne postoji na vasoj prodaji ili ste stavili preveliku kolicinu tog proizvoda.")
+    else:
+        await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+
+class StilBorbe(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+    @discord.ui.button(label="Štemerski Stil",style=discord.ButtonStyle.primary,emoji="🥊",custom_id="Štemerski Stil")
+    async def stemarski_stil(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Vas stil borbe je od sada Štemerski Stil")
+    @discord.ui.button(label="Kavalirski Stil",style=discord.ButtonStyle.primary,emoji="🎩",custom_id="Kavalirski Stil")
+    async def kavalirski_stil(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Vas stil borbe je od sada Kavalirski Stil")
+    @discord.ui.button(label="Konobarski Stil",style=discord.ButtonStyle.primary,emoji="🍺",custom_id="Konobarski Stil")
+    async def konobarski_stil(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Vas stil borbe je od sada Konobarski Stil")
+    @discord.ui.button(label="Purger Stil",style=discord.ButtonStyle.primary,emoji="🏙️",custom_id="Purger Stil")
+    async def purger_stil(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Vas stil borbe je od sada Purger Stil")
+    @discord.ui.button(label="Trgovački Stil",style=discord.ButtonStyle.primary,emoji="💰",custom_id="Trgovački Stil")
+    async def trgovacki_stil(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Vas stil borbe je od sada Trgovački Stil")
+class Stil():
+    def __init__(self,name,attack,defence,stamina,health,crit_chance,crit_damage,miss_chance):
+        self.name = name
+        self.attack = attack
+        self.defence = defence
+        self.health = health
+        self.stamina = stamina
+        self.crit_chance = crit_chance
+        self.crit_damage = crit_damage
+        self.miss_chance = miss_chance
+stilovi = {
+    "Štemerski Stil": Stil("Štemerski Stil",15,5,70,100,0.3,2,0.1),
+    "Kavalirski Stil": Stil("Kavalirski Stil",8,20,100,120,0.1,1.5,0.4),
+    "Konobarski Stil": Stil("Konobarski Stil",7,20,100,150,0.1,1.5,0.2),
+    "Purger Stil": Stil("Purger Stil",10,10,100,100,0.1,1.5,0.2),
+    "Trgovački Stil": Stil("Trgovački Stil",5,5,80,80,0.1,1.3,0.15)
+
+}
+
+@bot.command(aliases=['stilovi'])
+async def stilovi_borbe(ctx):
+    stilovi = discord.Embed(title="Stilovi borbe",color=discord.Color.dark_blue())
+    stilovi.add_field(name="Štemerski Stil 🥊💥",
+                      value="✅Prednosti: Brzi i snazni udarci, velika sansa za kriticne pogotke.\n❌Nedostaci: Slaba obrana, veća potrošnja energije/stamine.",
+                      inline=False)
+    stilovi.add_field(name="Kavalirski Stil 🎩🛡️",
+                      value="✅Prednosti: Dobra obrana, veća šansa za izbjegavanje napada.\n❌Nedostatci: Manja šteta po udarcu, sporiji napadi.",
+                      inline=False)
+    stilovi.add_field(name="Konobarski Stil 🍺🪑",
+                      value="✅Prednosti: Visok nivo zdravlja, može preživjeti duge borbe.\n❌Nedostaci: Nema jake i brze napade.",
+                      inline=False)
+    stilovi.add_field(name="Purger Stil 🏙️⚖️",
+                      value="✅Prednosti: Dobro izbalansiran napad i obrana.\n❌Nedostaci: Nema ekstremne prednosti u nekom segmentu.",
+                      inline=False)
+    stilovi.add_field(name="Trgovački Stil 💰📜",
+                      value="✅Prednosti: Može koristiti novac ili resurse za jačanje napada.\n❌Nedostaci: Ovisi o resursima, slabiji u svakom ostalom segmentu.",
+                      inline=False)
+    await ctx.send(embed=stilovi)
+@bot.command(aliases=['stil'])
+async def stil_borbe(ctx):
+    if str(ctx.author.id) in ids():
+        user = session.query(User).filter_by(id=str(ctx.author.id)).first()
+        fight_style = session.query(User).filter_by(id=str(ctx.author.id)).first().fight_style
+        last_selection_fight_style_date = datetime.strptime(user.last_fight_style_selection,"%M-%H-%d-%m-%Y") + timedelta(minutes=15)
+        if last_selection_fight_style_date < datetime.now():
+            await ctx.send(f"Vas stil borbe je {fight_style}",view=StilBorbe())
+            @bot.listen()
+            async def on_interaction(interaction: discord.Interaction):
+                if interaction.type == discord.InteractionType.component:
+                    stil = interaction.data.get("custom_id")
+                    now = datetime.now()
+                    user.last_fight_style_selection = now.strftime("%M-%H-%d-%m-%Y")
+                    user.fight_style = str(stil)
+                    session.commit()
+        else:
+            await ctx.send("Morate pricekati 15 minuta nakon biranja stila borbe kako bi ste opet birali stil")
+
+    else:
+        await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+
 with open('token.txt', 'r') as f:
     token = f.read()
 bot.run(str(token))

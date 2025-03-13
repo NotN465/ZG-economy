@@ -24,6 +24,9 @@ class User(Base):
     last_chop_time = Column(String)
     last_mine_time = Column(String)
     last_fishing_time = Column(String)
+    fight_style = Column(String)
+    last_fight_style_selection = Column(String)
+    last_fight_time = Column(String)
 
     bank = relationship('Bank', back_populates='user')
     inventory = relationship('Inventory', back_populates='user')
