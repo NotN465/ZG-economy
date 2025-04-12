@@ -7,10 +7,14 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from models import User,Bank,Inventory,Stocks,Server,CommunityMarket
+from cogs.Functions import level_xp
+import json
 
 engine = create_engine('sqlite:///UserInfo.db')
 Session = sessionmaker(bind=engine)
 session = Session()
+
+"""
 class StilBorbe(discord.ui.View):
     def __init__(self):
         super().__init__()
@@ -58,11 +62,12 @@ stilovi = {
         "Trgovački Stil": Stil("Trgovački Stil", 5, 5, 80, 80, 0.1, 1.3, 0.15)
 
     }
-
+"""
 class Combat(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+    """
     @commands.command(aliases=['stilovi'])
     async def stilovi_borbe(self,ctx):
         stilovi = discord.Embed(title="Stilovi borbe", color=discord.Color.dark_blue())
@@ -106,5 +111,47 @@ class Combat(commands.Cog):
 
         else:
             await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+"""
+    @commands.command(aliases=['lov'])
+    async def lovi(self,ctx):
+        #treba sadrzavat lov i onda izgubis nesto zdravlja i dobijes neki xp i mozd parei ili neke stvari, ovisi koji je mob
+        message = ctx.message.content
+        message = message.split(" ")
+        if str(ctx.author.id) in ids():
+            pass
+        else:
+            await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+    @commands.command(aliases=['mjesto','area','m','a'])
+    async def lokacija(self,ctx):
+        message = ctx.message.content
+        message = message.split(" ")
+        if str(ctx.author.id) in ids():
+            with open("C:/Users/gcelj/PycharmProjects/Zagreb themed economy discord bot/data/areas.json") as f:
+                data = json.load(f)
+            if len(message) == 2:
+                lokacije_embed = discord.Embed(title="Lokacije", color=discord.Color.green())
+                i = 1
+                for key, value in data.items():
+                    lokacije_embed.add_field(name=f"**{key}** - {i}", value=f"**Opis**: {data[key]['description']}\n**Potreban level:** {data[key]['level']} ili vise", inline=False)
+                    i+=1
+                await ctx.send(embed=lokacije_embed)
+
+            elif len(message) == 3 and str(message[2]) in '0123456789' and int(message[2]) <= len(data):
+                user_level = level_xp(ctx.author.id)[0]
+                location = data[list(data.keys())[int(message[2])-1]]
+                if user_level >= location['level']:
+                    user = session.query(User).filter_by(id=str(ctx.author.id)).first()
+                    new_location = list(data.keys())[int(message[2])-1]
+                    user.lokacija = new_location
+                    session.commit()
+                    await ctx.send(f"Vas lokacija je **{new_location}**")
+                else:
+                    await ctx.send(f"Vas level nije dovoljno za ovu lokaciju")
+            else:
+                await ctx.send("Krivo ste upisali komandu, format komande je lokacija <broj lokacije>")
+
+        else:
+            await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+
 async def setup(bot):
     await bot.add_cog(Combat(bot))

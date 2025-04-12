@@ -5,20 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="046cef4e-d083-42ee-9be0-94f0e9706bc1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/cogs/Functions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/combat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/developer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/dionice.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/games.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/help.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/interaction.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/market.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/shop.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cogs/skills.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/areas.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/mobs.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserInfo.db" beforeDir="false" afterPath="$PROJECT_DIR$/UserInfo.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/alembic/versions/14bc6236755d_made_columns_for_users_fighting_style_.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/versions/14bc6236755d_made_columns_for_users_fighting_style_.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cogs/combat.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/combat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cogs/skills.py" beforeDir="false" afterPath="$PROJECT_DIR$/cogs/skills.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deleting  script.py" beforeDir="false" afterPath="$PROJECT_DIR$/deleting  script.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,39 +41,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.14bc6236755d_made_columns_for_users_fighting_style_.executor&quot;: &quot;Run&quot;,
-    &quot;Python.67faf24e8031_fighting_styles.executor&quot;: &quot;Run&quot;,
-    &quot;Python.c75b86917e1e_made_a_new_table_called_community_market.executor&quot;: &quot;Run&quot;,
-    &quot;Python.deleting  script.executor&quot;: &quot;Run&quot;,
-    &quot;Python.developer.executor&quot;: &quot;Run&quot;,
-    &quot;Python.dionice.executor&quot;: &quot;Run&quot;,
-    &quot;Python.env.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.models.executor&quot;: &quot;Run&quot;,
-    &quot;Python.server stock market.executor&quot;: &quot;Run&quot;,
-    &quot;Python.skills.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.snake in the console.executor&quot;: &quot;Run&quot;,
-    &quot;Python.stock market.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.video downloader.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;com.codeium.snoozedEndTime&quot;: &quot;1740791929982&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/gcelj/PycharmProjects/Zagreb themed economy discord bot&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.14bc6236755d_made_columns_for_users_fighting_style_.executor": "Run",
+    "Python.67faf24e8031_fighting_styles.executor": "Run",
+    "Python.c75b86917e1e_made_a_new_table_called_community_market.executor": "Run",
+    "Python.deleting  script.executor": "Run",
+    "Python.developer.executor": "Run",
+    "Python.dionice.executor": "Run",
+    "Python.env.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.models.executor": "Run",
+    "Python.server stock market.executor": "Run",
+    "Python.skills.executor": "Debug",
+    "Python.snake in the console.executor": "Run",
+    "Python.stock market.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.video downloader.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "com.codeium.enabled": "true",
+    "com.codeium.snoozedEndTime": "1740791929982",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/gcelj/PycharmProjects/Zagreb themed economy discord bot",
+    "settings.editor.selected.configurable": "settings.json.schema"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\gcelj\PycharmProjects\Zagreb themed economy discord bot" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
-    <configuration name="developer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="deleting  script" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject2" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -85,33 +82,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cogs" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cogs/developer.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="dionice" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="pythonProject2" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cogs" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cogs/dionice.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/deleting  script.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -134,6 +109,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="models" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject2" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -210,11 +207,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.deleting  script" />
+        <item itemvalue="Python.models" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.skills" />
         <item itemvalue="Python.server stock market" />
-        <item itemvalue="Python.dionice" />
-        <item itemvalue="Python.developer" />
       </list>
     </recent_temporary>
   </component>
@@ -235,5 +232,16 @@
       <updated>1737325043702</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

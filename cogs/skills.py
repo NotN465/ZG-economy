@@ -134,6 +134,9 @@ class Skills(commands.Cog):
                     "Vec ste ribarili, morate pricekati 2 sata od zadnjeg puta kada ste ribarili da bi mogli opet ribariti.")
         else:
             await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+    @commands.command(aliases=['cd'])
+    async def cooldown(self,ctx):
+        pass
 
 async def setup(bot):
     await bot.add_cog(Skills(bot))

@@ -1,0 +1,84 @@
+{
+  "vjeverica": {
+    "health": 20,
+    "attack": 3,
+    "drop_xp": [
+      5,
+      7
+    ],
+    "drop_gold": [
+      3,
+      5
+    ],
+    "drops": [
+      "grancica",
+      "orah",
+      "vjevericev rep"
+    ]
+  },
+  "vrana": {
+    "health": 25,
+    "attack": 4,
+    "drop_xp": [
+      6,
+      8
+    ],
+    "drop_gold": [
+      4,
+      6
+    ],
+    "drops": [
+      "perije",
+      "vranin kljun"
+    ]
+  },
+  "divlja patka": {
+    "health": 30,
+    "attack": 5,
+    "drop_xp": [
+      8,
+      10
+    ],
+    "drop_gold": [
+      5,
+      7
+    ],
+    "drops": [
+      "perije",
+      "patkin kljun"
+    ]
+  },
+  "vuk": {
+    "health": 80,
+    "attack": 15,
+    "drop_xp": [
+      25,
+      30
+    ],
+    "drop_gold": [
+      20,
+      25
+    ],
+    "drops": [
+      "vucje meso",
+      "kosti"
+    ]
+  },
+  "medvjed": {
+    "health": 130,
+    "attack": 22,
+    "drop_xp": [
+      40,
+      50
+    ],
+    "drop_gold": [
+      30,
+      40
+    ],
+    "drops": [
+      "medvjede meso",
+      "kosti",
+      "medvjede krzno"
+    ]
+  }
+}

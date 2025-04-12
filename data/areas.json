@@ -1,0 +1,21 @@
+{
+  ":evergreen_tree:Park Maksimir": {
+  "Mobs": [
+    "vjeverica",
+    "vrana",
+    "divlja patka"],
+    "description":
+    "Maksimirski park, sadrzi razne vrste slabijih zivotinja!",
+    "level": 0
+},
+":mountain:Medvednica:":{
+"Mobs": [
+"vuk",
+"medvjed",
+"ris"
+],
+"description":
+"Medvednica je planina koja sadrzi razne vrste malo opasnijih zivotinja. Na medvendici se mogu naci razne vrste jeftinih ruda!",
+"level": 10
+}
+}

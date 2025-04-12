@@ -19,8 +19,14 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    pass
-
+    op.create_table(
+        'Combat',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('health', sa.Integer, nullable=False),
+        sa.Column('last_hunt_time', sa.String, nullable=True),
+        sa.Column('equipment', sa.JSON, nullable=True),
+        sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id'), nullable=False)
+    )
 
 def downgrade() -> None:
-    pass
+    op.drop_table('Combat')

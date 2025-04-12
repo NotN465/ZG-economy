@@ -17,6 +17,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     posao = Column(String)
+    lokacija = Column(String)
     xp = Column(Integer)
     chop_xp = Column(Integer)
     mine_xp = Column(Integer)
@@ -36,22 +37,32 @@ class Bank(Base):
     money = Column(Integer)
     savings = Column(Integer)
     last_work_time = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id',name="fk_user_id_bank"))
     user = relationship('User', back_populates='bank')
 class Inventory(Base):
     __tablename__ = 'inventory'
     id = Column(Integer, primary_key=True)
     items = Column(JSON)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id',name="fk_user_id_inventory"))
     user = relationship('User', back_populates='inventory')
 class Stocks(Base):
     __tablename__ = 'stocks'
     id = Column(Integer, primary_key=True)
     stocks = Column(JSON)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id',name="fk_user_id_stocks"))
 class CommunityMarket(Base):
     __tablename__ = 'community_market'
     id = Column(Integer, primary_key=True)
     items = Column(JSON)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id',name="fk_user_id_community_market"))
+class Combat(Base):
+    __tablename__ = 'combat'
+    id = Column(Integer, primary_key=True)
+    health =  Column(Integer)
+    remaining_health = Column(Integer)
+    defence = Column(Integer)
+    attack = Column(Integer)
+    last_hunt_time = Column(String)
+    equipment = Column(JSON)
+    user_id = Column(Integer, ForeignKey('users.id', name="fk_user_id_combat"))
 Base.metadata.create_all(engine)

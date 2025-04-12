@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Column, Integer, String,func
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from models import User,Bank,Inventory,Stocks,Server,CommunityMarket
+from models import User,Bank,Inventory,Stocks,Server,CommunityMarket,Combat
 import os
 import json
 import asyncio
@@ -17,7 +17,7 @@ from cogs.Functions import level_xp,floor_decimal
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-bot = commands.Bot(command_prefix="!",intents=intents)
+bot = commands.Bot(command_prefix="zg ",intents=intents)
 
 engine = create_engine('sqlite:///UserInfo.db')
 Session = sessionmaker(bind=engine)
@@ -126,17 +126,44 @@ async def NapraviProfil(ctx):
         user = User(name=str(ctx.author.name), id=str(ctx.author.id),posao="Nema"
                     ,xp=0,chop_xp=0,mine_xp=0,fishing_xp=0
                     ,last_fishing_time=now,last_mine_time=now,last_chop_time=now
-                    ,fight_style="Nema",last_fight_style_selection=now,last_fight_time=now)
+                    ,fight_style="Nema",last_fight_style_selection=now,last_fight_time=now,lokacija="Park Maksimir")
 
         money = Bank(money=50, savings=0, user_id=str(ctx.author.id), last_work_time=now)
         invetory = Inventory(items={}, user_id=str(ctx.author.id))
         stocks = Stocks(stocks={},user_id=str(ctx.author.id))
+        combat = Combat(health=100,last_hunt_time=now,equipment={},user_id=str(ctx.author.id),attack=10,defence=0,remaining_health=100)
         session.add(money)
         session.add(user)
         session.add(invetory)
         session.add(stocks)
+        session.add(combat)
         session.commit()
         await ctx.send("Racun je napravljen!")
+@bot.command(aliases=['p'])
+async def profil(ctx):
+    if str(ctx.author.id) in ids():
+        profile_embed = discord.Embed(
+            title="Profil od: " + str(ctx.author.name),
+            color=discord.Color.dark_blue(),
+        )
+        user = session.query(User).filter_by(id=str(ctx.author.id)).first()
+        money = session.query(Bank).filter_by(user_id=str(ctx.author.id)).first()
+        combat = session.query(Combat).filter_by(user_id=str(ctx.author.id)).first()
+
+        profile_embed.set_thumbnail(url=ctx.author.avatar.url)
+        profile_embed.add_field(name="XP/Level", value=f"Level: {level_xp(ctx.author.id)[0]}\nXP: {level_xp(ctx.author.id)[1]}/{level_xp(ctx.author.id)[2]}", inline=False)
+        profile_embed.add_field(name="Stats",value=f":heart: Zdravlje: {combat.remaining_health}/{combat.health}\n:crossed_swords:Napad: {combat.attack}\n🛡Obrana: {combat.defence}", inline=False)
+        profile_embed.add_field(name="Naoruzanje",value=f"Oprema: {combat.equipment}", inline=False)
+        profile_embed.add_field(name="Posao",value=f":hammer_pick: Posao: {user.posao}", inline=False)
+        profile_embed.add_field(name="Lokacija",value=f":map: Lokacija: {user.lokacija}", inline=False)
+        profile_embed.add_field(name="Pare",value=f"💵Pare: {money.money}", inline=False)
+
+        await ctx.send(embed=profile_embed)
+    else:
+        await ctx.send("Korisnik nije pronadjen, !NapraviProfil za napraviti racun!")
+@bot.event
+async def on_command_error(ctx, error):
+    raise error
 prvi_sektor_poslovi = {"Farmer": 900, "Ribar": 900, "Rudar": 950 , "Drvosječa": 1000, "Lovac": 1000, "Pčelar": 800, "Vinogradar": 1200, "Voćar": 950, "Cvjećar": 850, "Stožar": 900}
 drugi_sektor_poslovi = {"Radnik u tvornici": 1200, "Zidar":1100, "Bravar":1050, "Električar":1700, "Stolar":1300, "Automehaničar": 1500, "Kovač": 1200, "Vodoinstalater": 1700, "Tekstilni radnik": 1050, "Keramičar": 1800}
 treci_sektor_poslovi = {"Liječnik": 2500, "Pravni savjetnik": 2000, "Inženjer": 2000, "Profesor": 1500, "Arhitekt": 1700, "Farmaceut": 1200, "Psiholog": 2000, "Računalni programer": 2200, "Ekonomist": 1800, "Financijski analitičar": 2000}
